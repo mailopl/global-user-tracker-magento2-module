@@ -1,0 +1,67 @@
+<?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+
+$registry = $objectManager->get('\Magento\Framework\Registry');
+$currentProduct = $registry->registry('current_product');
+?>
+
+<script type="text/javascript">
+    var globalUserTrackerUrl = '<?php echo $this->getUrl('globalusertracker/index/index'); ?>';
+    var productId = '<?php echo $currentProduct->getId(); ?>';
+
+    var fingerprint = (function(window, screen, navigator) {
+        // https://github.com/darkskyapp/string-hash
+        function checksum(str) {
+            var hash = 5381,
+                i = str.length;
+
+            while (i--) hash = (hash * 33) ^ str.charCodeAt(i);
+
+            return hash >>> 0;
+        }
+
+        // http://stackoverflow.com/a/4167870/1250044
+        function map(arr, fn){
+            var i = 0, len = arr.length, ret = [];
+            while(i < len){
+                ret[i] = fn(arr[i++]);
+            }
+            return ret;
+        }
+
+        return checksum([
+            navigator.userAgent,
+            [screen.height, screen.width, screen.colorDepth].join('x'),
+            new Date().getTimezoneOffset(),
+            !!window.sessionStorage,
+            !!window.localStorage,
+            map(navigator.plugins, function (plugin) {
+                return [
+                    plugin.name,
+                    plugin.description,
+                    map(plugin, function (mime) {
+                        return [mime.type, mime.suffixes].join('~');
+                    }).join(',')
+                ].join("::");
+            }).join(';')
+        ].join('###'));
+
+    }(this, screen, navigator));
+</script>
+
+<script>// <![CDATA[
+    require([
+        'jquery',
+        'badass',
+        'domReady'
+    ], function ($) {
+        $(window).load(function() {
+            $(document).GlobalUserTrack(globalUserTrackerUrl, {
+                url: window.location.href,
+                guid: fingerprint,
+                productId: productId
+            });
+        });
+    });
+    // ]]>
+</script>

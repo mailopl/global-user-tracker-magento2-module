@@ -1,0 +1,16 @@
+{
+  "name": "badass/global-user-tracker",
+  "description": "Allows for cookie-less user product views tracking with simple statistics.",
+  "type": "magento2-module",
+  "version": "1.0.0",
+  "require": {
+    "php": "~7.0.0",
+    "magento/framework": "~100.0"
+  },
+  "autoload": {
+    "files": [ "registration.php" ],
+    "psr-4": {
+      "Badass\\GlobalUserTracker\\": ""
+    }
+  }
+}

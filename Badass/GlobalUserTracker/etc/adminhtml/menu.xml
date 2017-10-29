@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Badass_GlobalUserTracker::global_statistics"
+             title="Global user tracker"
+             module="Badass_GlobalUserTracker"
+             sortOrder="9999"
+             resource="Magento_Backend::admin" />
+
+        <add id="Badass_GlobalUserTracker::user_statistics"
+             title="User statistics"
+             module="Badass_GlobalUserTracker"
+             sortOrder="0"
+             action="globalusertracker/statistics"
+             parent="Badass_GlobalUserTracker::global_statistics"
+             dependsOnModule="Badass_GlobalUserTracker"
+             resource="Badass_GlobalUserTracker::user_statistics" />
+    </menu>
+</config>

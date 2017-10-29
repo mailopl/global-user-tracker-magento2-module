@@ -1,0 +1,66 @@
+<?php
+$statisticBuckets = $this->getStatisticBuckets();
+?>
+<section id="statistics-chart">
+    <div id='views_chart'></div>
+</section>
+<section id="statistics-data">
+    <?php if (empty($statisticBuckets)): ?>
+        <p><?php echo __('No data logged.') ?></p>
+    <?php else: ?>
+        <?php foreach($statisticBuckets as $guid => $products): ?>
+                <div>
+                    <p>
+                        <strong><?php echo __('User %s', $guid) ?></strong>
+                    </p>
+                    <?php foreach($products as $product): ?>
+                        <?php echo $product['createdAt'] ?> &raquo;
+                        <?php echo $product['title']; ?> <br />
+                    <?php endforeach; ?>
+                </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</section>
+<?php
+$chartLines = [];
+foreach($this->fetchMostViewedProducts() as $item):
+    $chartLines[] = sprintf("['%s', %d, '%s']", $item['title'], $item['views'], '#383430');
+endforeach;
+
+$chartRawData = implode(",", $chartLines);
+?>
+
+<script type="text/javascript">
+    var chartData = [['Product', 'Views', { role: 'style' }], <?php echo $chartRawData ?>];
+</script>
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<script type="text/javascript">
+    google.charts.load("current", {packages:['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+        if (chartData.length < 2) {
+            return;
+        }
+
+        var data = google.visualization.arrayToDataTable(chartData);
+
+        var options = {
+            title: "Popular product views",
+            bar: {groupWidth: '80%'},
+            legend: 'none'
+        };
+
+        var views_chart = document.getElementById('views_chart');
+        var chart = new google.visualization.ColumnChart(views_chart);
+
+        // Wait for the chart to finish drawing before calling the getImageURI() method.
+        google.visualization.events.addListener(chart, 'ready', function () {
+            views_chart.innerHTML = '<img src="' + chart.getImageURI() + '">';
+            console.log(views_chart.innerHTML);
+        });
+
+        chart.draw(data, options);
+    }
+</script>
